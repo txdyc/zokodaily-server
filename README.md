@@ -49,3 +49,42 @@ python api_server.py
 - 设置 `APP_ENV=production`
 - 提供生产环境专用的 `.env` 或系统环境变量
 - 使用 `wsgi.py` 作为 WSGI 入口接入 Gunicorn / uWSGI / Waitress 等
+
+## Ubuntu 心跳守护
+
+- 启动脚本：`scripts/run_api_service.sh`
+- 每分钟心跳检查脚本：`scripts/check_api_heartbeat.sh`
+- 安装 `systemd` 服务与 watchdog：`scripts/install_ubuntu_watchdog.sh`
+- 卸载 `systemd` 服务与 watchdog：`scripts/uninstall_ubuntu_watchdog.sh`
+
+默认行为
+
+- API 心跳地址：`http://127.0.0.1:8000/api/health`
+- watchdog 每 `1` 分钟执行一次
+- 如果心跳检查失败，则执行：`systemctl restart zokodaily-api.service`
+
+安装示例
+
+```bash
+cd server
+chmod +x ./scripts/*.sh
+sudo ./scripts/install_ubuntu_watchdog.sh
+```
+
+可选环境变量
+
+- `SERVICE_NAME`：默认 `zokodaily-api`
+- `FLASK_PORT`：默认 `8000`
+- `HEALTH_URL`：默认 `http://127.0.0.1:8000/api/health`
+- `ENV_FILE`：默认 `server/.env.production`
+- `RUN_USER` / `RUN_GROUP`：指定 systemd 运行用户
+- `PYTHON_BIN`：显式指定 Python 解释器
+
+验证命令
+
+```bash
+systemctl status zokodaily-api.service
+systemctl status zokodaily-api-watchdog.service
+systemctl status zokodaily-api-watchdog.timer
+systemctl list-timers | grep zokodaily-api-watchdog
+```
