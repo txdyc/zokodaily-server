@@ -50,6 +50,40 @@ python api_server.py
 - 提供生产环境专用的 `.env` 或系统环境变量
 - 使用 `wsgi.py` 作为 WSGI 入口接入 Gunicorn / uWSGI / Waitress 等
 
+### uWSGI + Nginx（socket）
+
+- 已提供 `uwsgi` 配置文件：`uwsgi.ini`
+- 默认 Unix socket：`/run/zokodaily-api/uwsgi.sock`
+- 适合由 Nginx 通过 `uwsgi_pass` 反向代理
+
+启动示例
+
+```bash
+cd server
+uwsgi --ini uwsgi.ini
+```
+
+Nginx 示例
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/run/zokodaily-api/uwsgi.sock;
+        uwsgi_read_timeout 60s;
+    }
+}
+```
+
+说明
+
+- 建议配合 `systemd` 设置 `WorkingDirectory=server` 后再执行：`uwsgi --ini uwsgi.ini`
+- 生产环境配置建议写入 `.env.production`
+- 如果 Nginx 用户为 `www-data`，请确保 socket 所在目录和 socket 文件对该用户组可读写
+
 ## Ubuntu 心跳守护
 
 - 启动脚本：`scripts/run_api_service.sh`
