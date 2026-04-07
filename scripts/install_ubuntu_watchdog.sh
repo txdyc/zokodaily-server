@@ -80,5 +80,7 @@ echo "  ${WATCHDOG_SERVICE_PATH}"
 echo "  ${WATCHDOG_TIMER_PATH}"
 echo
 echo "Health check URL: ${HEALTH_URL}"
+echo "uWSGI socket: /run/zokodaily-api/uwsgi.sock"
+echo "uWSGI http-socket: 127.0.0.1:${FLASK_PORT}"
 echo "Use 'systemctl status ${SERVICE_NAME}.service' to verify."
 echo "Use 'systemctl list-timers | grep ${SERVICE_NAME}-watchdog' to verify timer."

@@ -54,7 +54,8 @@ python api_server.py
 
 - 已提供 `uwsgi` 配置文件：`uwsgi.ini`
 - 默认 Unix socket：`/run/zokodaily-api/uwsgi.sock`
-- 适合由 Nginx 通过 `uwsgi_pass` 反向代理
+- 同时开启本地 HTTP 调试/健康检查端口：`127.0.0.1:8000`
+- 适合由 Nginx 通过 `uwsgi_pass` 反向代理，同时允许本机直接 `curl`
 
 启动示例
 
@@ -83,6 +84,12 @@ server {
 - 建议配合 `systemd` 设置 `WorkingDirectory=server` 后再执行：`uwsgi --ini uwsgi.ini`
 - 生产环境配置建议写入 `.env.production`
 - 如果 Nginx 用户为 `www-data`，请确保 socket 所在目录和 socket 文件对该用户组可读写
+- 现在 `uWSGI` 同时启用了：
+  - `socket = /run/zokodaily-api/uwsgi.sock`
+  - `http-socket = 127.0.0.1:8000`
+- 因此你可以直接执行：
+  - `curl http://127.0.0.1:8000/api/health`
+- watchdog 也会默认检查这个本地 HTTP 地址
 
 ## Ubuntu 心跳守护
 
